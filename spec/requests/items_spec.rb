@@ -81,4 +81,33 @@ RSpec.describe 'Items API' do
       end
     end
   end
+
+  describe 'PUT /todos/:todo_id/items/:id' do
+    let(:valid_attributes) { { name: 'Mozart' } }
+
+    before { put "/todos/#{todo_id}/items/#{id}", params: valid_attributes }
+
+    context 'when item exists' do
+      it 'returns status code 204' do
+        expect(response).to have_http_status(204)
+      end
+
+      it 'updates the item' do
+        updated_item = Item.find(id)
+        expect(updated_item.name).to match(/Mozart/)
+      end
+    end
+
+    context 'when the item does not exist' do
+      let(:id) { 0 }
+
+      it 'returns status code 404' do
+        expect(response).to have_http_status(404)
+      end
+
+      it 'returns a not found message' do
+        expect(response.body).to match(/Couldn't find Item/)
+      end
+    end
+  end
 end
